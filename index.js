@@ -19,26 +19,41 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
 // Fungsi untuk membuat tabel dan mengisi data awal (SEEDER)
 function initializeDatabase(db) {
     db.serialize(() => {
-        // Skema tabel Vendor B: CamelCase, Price INT, isAvailable BOOLEAN
+        // 1. Buat Tabel jika Belum Ada
         db.run(`CREATE TABLE IF NOT EXISTS products (
             sku TEXT PRIMARY KEY,
             productName TEXT NOT NULL,
             price INTEGER NOT NULL,
             isAvailable BOOLEAN
-        )`);
+        )`, (err) => {
+            if (err) console.error('Error membuat tabel:', err.message);
 
-        // Mengisi data awal (Seeder)
-        const initialData = [
-            ['TSHIRT-001', 'Kaos flimx', 75000, 1], // 1 = true
-            ['HOODIE-005', 'Jacket Gorpcore', 185000, 1],
-            ['CAP-002', 'Topi outdoor', 45000, 0] // 0 = false
-        ];
+            // 2. Cek apakah Tabel Kosong?
+            db.get("SELECT COUNT(*) AS count FROM products", (err, row) => {
+                if (err) {
+                    console.error('Error cek data:', err.message);
+                    return;
+                }
 
-        const stmt = db.prepare(`INSERT OR REPLACE INTO products VALUES (?, ?, ?, ?)`);
-        initialData.forEach(data => stmt.run(data));
-        stmt.finalize(() => console.log('🛒 Data awal berhasil di-seed.'));
+                // 3. Hanya Isi Data (Seeder) jika Tabel masih Kosong
+                if (row.count === 0) {
+                    const initialData = [
+                        ['TSHIRT-001', 'Kaos Ijen Crater', 75000, 1],
+                        ['HOODIE-005', 'Jacket Gunung Raung', 185000, 1],
+                        ['CAP-002', 'Topi Etnik Osing', 45000, 0]
+                    ];
+
+                    const stmt = db.prepare(`INSERT INTO products VALUES (?, ?, ?, ?)`);
+                    initialData.forEach(data => stmt.run(data));
+                    stmt.finalize(() => console.log('🛒 Data awal berhasil di-seed (Tabel kosong).'));
+                } else {
+                    console.log(`👍 Database sudah memiliki ${row.count} record. Seeder dilewati.`);
+                }
+            });
+        });
     });
 }
+// AKHIR PERUBAHAN
 
 // --- 2. Endpoint GET (Untuk Integrator) ---
 app.get('/api/v1/products', (req, res) => {
