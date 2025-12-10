@@ -54,7 +54,7 @@ function initializeDatabase(db) {
 // AKHIR PERUBAHAN
 
 // --- 2. Endpoint GET (Untuk Integrator) ---
-app.get('/api/v1/products', (req, res) => {
+app.get('/api/vendor-b', (req, res) => {
     const sql = "SELECT * FROM products";
     db.all(sql, [], (err, rows) => {
         if (err) {
@@ -76,7 +76,7 @@ app.get('/api/v1/products', (req, res) => {
 
 
 // --- 3. Endpoint POST (Untuk Simulasi Input Data Baru) ---
-app.post('/api/v1/products', (req, res) => {
+app.post('/api/vendor-b', (req, res) => {
     const { sku, productName, price, isAvailable } = req.body;
 
     if (!sku || !productName || !price) {
@@ -107,7 +107,7 @@ app.listen(PORT, () => {
 });
 
 // Endpoint PUT (UPDATE) untuk mengupdate produk berdasarkan SKU
-app.put('/api/v1/products/:sku', (req, res) => {
+app.put('/api/vendor-b/:sku', (req, res) => {
     const targetSku = req.params.sku;
     const { productName, price, isAvailable } = req.body;
 
@@ -136,7 +136,7 @@ app.put('/api/v1/products/:sku', (req, res) => {
 });
 
 // Endpoint DELETE untuk menghapus produk berdasarkan SKU
-app.delete('/api/v1/products/:sku', (req, res) => {
+app.delete('/api/vendor-b/:sku', (req, res) => {
     const targetSku = req.params.sku;
 
     const sql = `DELETE FROM products WHERE sku = ?`;
