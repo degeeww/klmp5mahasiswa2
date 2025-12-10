@@ -39,8 +39,6 @@ function initializeDatabase(db) {
                 if (row.count === 0) {
                     const initialData = [
                         ['TSHIRT-001', 'Kaos Ijen Crater', 75000, 1],
-                        ['HOODIE-005', 'Jacket Gunung Raung', 185000, 1],
-                        ['CAP-002', 'Topi Etnik Osing', 45000, 0]
                     ];
 
                     const stmt = db.prepare(`INSERT INTO products VALUES (?, ?, ?, ?)`);
