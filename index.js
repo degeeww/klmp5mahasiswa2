@@ -107,3 +107,53 @@ app.post('/api/v1/products', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server Vendor B berjalan di: http://localhost:${PORT}`);
 });
+
+// Endpoint PUT (UPDATE) untuk mengupdate produk berdasarkan SKU
+app.put('/api/v1/products/:sku', (req, res) => {
+    const targetSku = req.params.sku;
+    const { productName, price, isAvailable } = req.body;
+
+    if (!productName || !price || isAvailable === undefined) {
+        return res.status(400).json({ message: "Data update tidak lengkap. Diperlukan productName, price, dan isAvailable." });
+    }
+    
+    // Konversi Boolean ke Integer (1/0)
+    const isAvailableInt = isAvailable ? 1 : 0; 
+
+    const sql = `UPDATE products SET productName = ?, price = ?, isAvailable = ? WHERE sku = ?`;
+    db.run(sql, [productName, price, isAvailableInt, targetSku], function(err) {
+        if (err) {
+            return res.status(500).json({ message: "Gagal update data.", error: err.message });
+        }
+        
+        if (this.changes === 0) {
+            return res.status(404).json({ message: `Produk dengan SKU ${targetSku} tidak ditemukan.` });
+        }
+        
+        res.status(200).json({ 
+            message: `Produk SKU ${targetSku} berhasil diupdate.`,
+            rowsAffected: this.changes
+        });
+    });
+});
+
+// Endpoint DELETE untuk menghapus produk berdasarkan SKU
+app.delete('/api/v1/products/:sku', (req, res) => {
+    const targetSku = req.params.sku;
+
+    const sql = `DELETE FROM products WHERE sku = ?`;
+    db.run(sql, [targetSku], function(err) {
+        if (err) {
+            return res.status(500).json({ message: "Gagal menghapus data.", error: err.message });
+        }
+        
+        if (this.changes === 0) {
+            return res.status(404).json({ message: `Produk dengan SKU ${targetSku} tidak ditemukan.` });
+        }
+
+        res.status(200).json({ 
+            message: `Produk SKU ${targetSku} berhasil dihapus.`,
+            rowsAffected: this.changes
+        });
+    });
+});
