@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
+ "scripts": {
+  "start": "node index.js",
+  "test": "echo \"No tests yet\"",
+  "build": "echo \"No build step\""
+},  "repository": {
     "type": "git",
     "url": "git+https://github.com/degeeww/klmp5mahasiswa2.git"
   },
